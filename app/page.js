@@ -186,21 +186,57 @@ export default function Page() {
           borderRadius: "10px"
         }}
       >
-        <h2>Related Tools</h2>
-        <ul>
-          <li style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => window.location.href = "https://debtreducingcalculator.com"}>
-            Debt Payoff Calculator
-          </li>
-          <li style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => window.location.href = "https://mysubscriptioncost.com"}>
-            Subscription Cost Calculator
-          </li>
-          <li style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => window.location.href = "https://emailattachmentsize.com"}>
-            Email Attachment Size Checker
-          </li>
-          <li style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => window.location.href = "https://my-gpacalculator.com"}>
-            GPA Calculator
-          </li>
-        </ul>
+        <div
+  style={{
+    background: "#ffffff",
+    padding: "1.5rem",
+    borderRadius: "10px",
+    marginBottom: "1.5rem"
+  }}
+>
+  <h2>Related Tools</h2>
+  <ul>
+    <li onClick={() => window.location.href = "https://creditcarddebtpayoffcalculator.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Credit Card Debt Payoff Calculator
+    </li>
+    <li onClick={() => window.location.href = "https://debtreducingcalculator.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Debt Reducing Calculator
+    </li>
+    <li onClick={() => window.location.href = "https://sidehustletaxestimator.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Side Hustle Tax Estimator
+    </li>
+    <li onClick={() => window.location.href = "https://highyieldsavingscalculator.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      High Yield Savings Calculator
+    </li>
+    <li onClick={() => window.location.href = "https://retirementsavingsgap.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Retirement Savings Gap
+    </li>
+    <li onClick={() => window.location.href = "https://lifeinsurancecoveragecalculator.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Life Insurance Coverage Calculator
+    </li>
+    <li onClick={() => window.location.href = "https://onlinecourseroi.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Online Course ROI Calculator
+    </li>
+    <li onClick={() => window.location.href = "https://mysubscriptioncost.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Subscription Cost Calculator
+    </li>
+    <li onClick={() => window.location.href = "https://emailattachmentsize.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Email Attachment Size Checker
+    </li>
+    <li onClick={() => window.location.href = "https://gpacalculator.site"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      GPA Calculator
+    </li>
+    <li onClick={() => window.location.href = "https://youtubetitlechecker.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      YouTube Title Checker
+    </li>
+    <li onClick={() => window.location.href = "https://strongpasswordbuilder.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Strong Password Builder
+    </li>
+    <li onClick={() => window.location.href = "https://coolusernamegenerator.com"} style={{ cursor: "pointer", textDecoration: "underline" }}>
+      Cool Username Generator
+    </li>
+  </ul>
+</div>
       </div>
 
       <div style={{ marginTop: "1rem", fontSize: "13px", color: "#666" }}>
