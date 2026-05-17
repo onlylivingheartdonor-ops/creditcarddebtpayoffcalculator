@@ -112,20 +112,6 @@ const METHODS = [
   { key: "emotional", label: "Emotional", desc: "Most hated first" },
 ]
 
-{/* ========== MONEYWISE LINK — START ========== */}
-<div style={{ background: "#fff", border: "1px solid #e0dbd3", borderRadius: "4px", padding: "1rem 1.5rem", marginBottom: "1.5rem", textAlign: "center" }}>
-  <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "#888" }}>
-    Looking for more free financial tools?{" "}
-    <a href="https://moneywisecalculator.com" style={{ color: "#b45309", textDecoration: "underline" }}>
-      Visit MoneyWiseCalculator.com
-    </a>
-  </p>
-</div>
-{/* ========== MONEYWISE LINK — END ========== */}
-
-{/* RELATED TOOLS */}
-import { RELATED_LINKS as RELATED } from "./lib/links"
-
 function fmt(n) { return "$" + Math.round(n).toLocaleString("en-US") }
 function fmtDec(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
 
@@ -139,7 +125,6 @@ function simulate(cards, extraPayment) {
   let totalInterest = 0
 
   while (balances.some(b => b.remaining > 0) && months < 600) {
-    // Apply interest and minimums to all cards
     balances.forEach(b => {
       if (b.remaining <= 0) return
       const rate = (parseFloat(b.rate) || 0) / 100 / 12
@@ -151,7 +136,6 @@ function simulate(cards, extraPayment) {
       b.remaining -= payment
       if (b.remaining < 0.01) b.remaining = 0
     })
-    // Apply extra to first non-zero card
     if (extra > 0) {
       const target = balances.find(b => b.remaining > 0)
       if (target) {
@@ -268,7 +252,7 @@ export default function Page() {
             <span className="cc-method-label">Payoff strategy</span>
             <div className="cc-method-tabs">
               {METHODS.map(m => (
-                <button key={m.key} className={`cc-method-tab${method === m.key ? " on" : ""}`}
+                <button key={m.key} className={"cc-method-tab" + (method === m.key ? " on" : "")}
                   onClick={() => setMethod(m.key)}>
                   {m.label} <span style={{ opacity: .6, fontSize: "10px", marginLeft: ".3rem" }}>{m.desc}</span>
                 </button>
@@ -296,8 +280,8 @@ export default function Page() {
                   <p className="cc-result-label">Payoff time</p>
                   <p className="cc-result-val">
                     {results.months >= 600 ? "50+ yrs" : results.months < 12
-                      ? `${results.months} mo`
-                      : `${Math.floor(results.months / 12)}y ${results.months % 12}m`}
+                      ? results.months + " mo"
+                      : Math.floor(results.months / 12) + "y " + (results.months % 12) + "m"}
                   </p>
                 </div>
                 <div className="cc-result-cell">
@@ -315,7 +299,7 @@ export default function Page() {
                     return (
                       <div className="cc-payoff-row" key={c.id}>
                         <span className="cc-payoff-pos">{i + 1}</span>
-                        <span className="cc-payoff-name">{c.name || `Card ${i + 1}`}</span>
+                        <span className="cc-payoff-name">{c.name || "Card " + (i + 1)}</span>
                         <span className="cc-payoff-detail">{fmt(parseFloat(c.balance) || 0)} · {c.rate || 0}% APR</span>
                         <div className="cc-payoff-bar-wrap">
                           <div className="cc-payoff-bar" style={{ width: barPct + "%" }} />
@@ -433,16 +417,16 @@ export default function Page() {
         {/* ========== MONEYWISE LINK — END ========== */}
 
         {/* RELATED */}
-        <div className="dr-card">
-          <p className="dr-section-title">Related tools</p>
-          <div className="dr-related-links">
+        <div className="cc-card">
+          <p className="cc-section-title">Related tools</p>
+          <div className="cc-related-links">
             {RELATED.map((r, i) => (
-              <a key={i} className="dr-related-link" href={r.href}>{r.label}</a>
+              <a key={i} className="cc-related-link" href={r.href}>{r.label}</a>
             ))}
           </div>
-          <div className="dr-disclaimer">
+          <div className="cc-disclaimer">
             This tool provides estimates for informational purposes only and does not constitute financial advice. Results assume a fixed interest rate and fixed monthly payment for the full repayment period. This site may use cookies and analytics. By using this site, you agree to our Privacy Policy and Terms of Service.
-            <div className="dr-footer-links">
+            <div className="cc-footer-links">
               <a href="/privacy">Privacy Policy</a>
               <a href="/terms">Terms of Service</a>
             </div>
