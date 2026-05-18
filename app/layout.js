@@ -7,6 +7,10 @@ export default function RootLayout({ children }) {
           name="description"
           content="Plan how to pay off multiple credit cards using snowball, avalanche, or emotional priority methods. See payoff time and interest savings."
         />
+  alternates: {
+    canonical: "www.creditcarddebtpayoffcalculator.com",
+  },
+};
 
         <script
           async
