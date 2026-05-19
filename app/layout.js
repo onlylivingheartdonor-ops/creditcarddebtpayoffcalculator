@@ -67,7 +67,22 @@ export default function RootLayout({ children }) {
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3475627763908800"
           crossOrigin="anonymous"
         ></script>
-      </head>
+              <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "creditcard-tool",
+              description: "Financial calculator tool",
+              url: "https://www.creditcard-tool.com",
+              applicationCategory: "Finance",
+              operatingSystem: "All",
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }
+            }),
+          }}
+        />
+    </head>
       <body>{children}</body>
     </html>
   );
