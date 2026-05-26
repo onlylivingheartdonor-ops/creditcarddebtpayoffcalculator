@@ -1,22 +1,22 @@
 export const metadata = {
-  title: "Credit Card Debt Payoff Calculator | Snowball, Avalanche & More",
-  description: "Plan how to pay off multiple credit cards using snowball, avalanche, or emotional priority methods. See payoff time and interest savings.",
-  
+  title: "Credit Card Debt Payoff Calculator | Snowball, Avalanche & Emotional Methods",
+  description: "Plan how to pay off multiple credit cards using snowball, avalanche, or emotional priority methods. See payoff time, total interest, and compare strategies side by side.",
+
   alternates: {
-    canonical: "https://www.creditcardpayoffcalculator.com",           // ← MUST CHANGE
+    canonical: "https://www.creditcarddebtpayoffcalculator.com",
   },
 
   openGraph: {
     title: "Credit Card Debt Payoff Calculator | Snowball, Avalanche & More",
     description: "Plan how to pay off multiple credit cards using snowball, avalanche, or emotional priority methods. See payoff time and interest savings.",
-    url: "https://www.creditcardpayoffcalculator.com",                 // ← MUST CHANGE
-    siteName: "Moneywise Calculators",             // ← Change
+    url: "https://www.creditcarddebtpayoffcalculator.com",
+    siteName: "MoneyWise Calculators",
     images: [
       {
-        url: "https://www.creditcardpayoffcalculator.com/og-image.png", // ← MUST CHANGE
+        url: "https://www.creditcarddebtpayoffcalculator.com/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Debt Payoff Calculator",
+        alt: "Credit Card Debt Payoff Calculator — Plan your debt freedom",
       },
     ],
     locale: "en_US",
@@ -26,7 +26,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Credit Card Debt Payoff Calculator | Snowball, Avalanche & More",
-    description: "Plan how to pay off multiple credit cards using snowball, avalanche, or emotional priority methods. See payoff time and interest savings.",
+    description: "Plan how to pay off multiple credit cards. See payoff time and interest savings.",
   },
 
   robots: {
@@ -46,13 +46,7 @@ export const metadata = {
     apple: "/apple-touch-icon.png",
   },
 
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
-
-  authors: [{name: "David Graham" }],
+  authors: [{ name: "David Graham" }],
   creator: "MoneyWise Calculators",
   publisher: "MoneyWise Calculators",
 };
@@ -61,28 +55,37 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* AdSense */}
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3475627763908800"
           crossOrigin="anonymous"
         ></script>
-              <script
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "creditcard-tool",
-              description: "Financial calculator tool",
-              url: "https://www.creditcard-tool.com",
-              applicationCategory: "Finance",
+              name: "Credit Card Debt Payoff Calculator",
+              description: "Free tool to plan credit card debt payoff using snowball, avalanche, or emotional methods. See payoff timeline, total interest, and compare strategies.",
+              url: "https://www.creditcarddebtpayoffcalculator.com",
+              applicationCategory: "FinanceApplication",
               operatingSystem: "All",
-              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }
+              browserRequirements: "Requires JavaScript",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD"
+              },
+              author: {
+                "@type": "Organization",
+                name: "MoneyWise Calculators",
+                url: "https://moneywisecalculator.com"
+              }
             }),
           }}
         />
-    </head>
+      </head>
       <body>{children}</body>
     </html>
   );

@@ -1,9 +1,7 @@
-"use client"
-
-import { useState, useMemo } from "react"
+import DebtPayoffCalculator from "./DebtPayoffCalculator"
 import { RELATED_LINKS as RELATED } from "./lib/links"
 
-const css = `
+const staticCss = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #faf8f4; font-family: 'DM Mono', monospace; color: #1a1a1a; }
@@ -14,7 +12,6 @@ const css = `
   .cc-title em { font-style: italic; color: #b91c1c; }
   .cc-card { background: #fff; border: 1px solid #e0dbd3; border-radius: 4px; padding: 1.5rem; margin-bottom: 1.5rem; }
   .cc-section-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 1rem; color: #1a1a1a; }
-
   .cc-debt-card { border: 1px solid #e0dbd3; border-radius: 3px; padding: 1rem; margin-bottom: .75rem; position: relative; transition: border-color .15s; }
   .cc-debt-card:hover { border-color: #b91c1c; }
   .cc-debt-card-header { display: flex; align-items: center; gap: .75rem; margin-bottom: .75rem; }
@@ -32,25 +29,20 @@ const css = `
   .cc-num-input { width: 100%; border: none; border-bottom: 1.5px solid #e0dbd3; background: transparent; font-family: 'DM Mono', monospace; font-size: .95rem; color: #1a1a1a; padding: .3rem 1rem .3rem 1rem; outline: none; transition: border-color .2s; text-align: right; }
   .cc-num-input.no-prefix { padding-left: 0; }
   .cc-num-input:focus { border-color: #b91c1c; }
-
   .cc-add-btn { display: flex; align-items: center; gap: .5rem; background: none; border: 1px dashed #e0dbd3; border-radius: 3px; width: 100%; padding: .75rem 1rem; font-family: 'DM Mono', monospace; font-size: 12px; color: #aaa; cursor: pointer; transition: all .15s; margin-bottom: 1.25rem; }
   .cc-add-btn:hover { border-color: #b91c1c; color: #b91c1c; }
-
   .cc-method-row { margin-bottom: 1.25rem; }
   .cc-method-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888; display: block; margin-bottom: .5rem; }
   .cc-method-tabs { display: flex; gap: .5rem; flex-wrap: wrap; }
   .cc-method-tab { padding: .5rem 1rem; border: 1px solid #e0dbd3; border-radius: 2px; font-family: 'DM Mono', monospace; font-size: 12px; color: #555; cursor: pointer; transition: all .15s; background: none; }
   .cc-method-tab.on { border-color: #b91c1c; background: #fff5f5; color: #b91c1c; }
-
   .cc-extra-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
   .cc-extra-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888; white-space: nowrap; }
   .cc-extra-input { flex: 1; border: none; border-bottom: 1.5px solid #e0dbd3; background: transparent; font-family: 'DM Mono', monospace; font-size: 1rem; color: #1a1a1a; padding: .3rem 0 .3rem 1rem; outline: none; transition: border-color .2s; }
   .cc-extra-input:focus { border-color: #b91c1c; }
   .cc-extra-prefix { font-size: .9rem; color: #aaa; }
-
   .cc-calc-btn { width: 100%; padding: 1rem; background: #1a1a1a; color: #fff; border: none; font-family: 'DM Mono', monospace; font-size: .9rem; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background .2s; }
   .cc-calc-btn:hover { background: #b91c1c; }
-
   .cc-results { margin-top: 1.5rem; border-top: 1px solid #e0dbd3; padding-top: 1.5rem; }
   .cc-result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: #e0dbd3; border: 1px solid #e0dbd3; border-radius: 2px; overflow: hidden; margin-bottom: 1.5rem; }
   .cc-result-cell { background: #fff; padding: 1rem 1.25rem; }
@@ -58,7 +50,6 @@ const css = `
   .cc-result-val { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: #1a1a1a; }
   .cc-result-val.red { color: #b91c1c; }
   .cc-result-val.green { color: #1a6b3a; }
-
   .cc-payoff-order { margin-bottom: 1rem; }
   .cc-payoff-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888; margin-bottom: .6rem; }
   .cc-payoff-list { display: flex; flex-direction: column; gap: .4rem; }
@@ -68,37 +59,38 @@ const css = `
   .cc-payoff-detail { color: #888; }
   .cc-payoff-bar-wrap { flex: 1; height: 3px; background: #e0dbd3; border-radius: 2px; overflow: hidden; }
   .cc-payoff-bar { height: 100%; background: #b91c1c; border-radius: 2px; transition: width .5s; }
-
   .cc-interest-note { font-size: 12px; color: #888; line-height: 1.6; padding: .9rem 1rem; background: #fff8f8; border: 1px solid #fcd4d4; border-radius: 3px; }
   .cc-interest-note span { color: #b91c1c; }
-
   .cc-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
   .cc-info-item { padding: .75rem; border-left: 2px solid #fcd4d4; }
   .cc-info-title { font-size: 12px; font-weight: 500; color: #1a1a1a; margin-bottom: .25rem; }
   .cc-info-body { font-size: 12px; color: #888; line-height: 1.5; }
-
   .cc-prose p { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: .75rem; }
   .cc-prose p:last-child { margin-bottom: 0; }
   .cc-prose ul { font-size: 13px; color: #444; line-height: 1.8; padding-left: 1.2rem; margin-bottom: .75rem; }
   .cc-prose ul li { margin-bottom: .3rem; }
-
   .cc-strategy-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
   .cc-strategy-num { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #fcd4d4; line-height: 1; margin-bottom: .4rem; }
   .cc-strategy-title { font-size: 12px; font-weight: 500; color: #1a1a1a; margin-bottom: .25rem; }
   .cc-strategy-body { font-size: 12px; color: #888; line-height: 1.5; }
-
+  .cc-faq-item { border-bottom: 1px solid #e0dbd3; padding: 1rem 0; }
+  .cc-faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .cc-faq-q { font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: .4rem; }
+  .cc-faq-a { font-size: 13px; color: #555; line-height: 1.7; }
   .cc-tip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .cc-tip-num { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #fcd4d4; line-height: 1; margin-bottom: .4rem; }
   .cc-tip-title { font-size: 12px; font-weight: 500; color: #1a1a1a; margin-bottom: .25rem; }
   .cc-tip-body { font-size: 12px; color: #888; line-height: 1.5; }
-
+  .sub-nav { font-size: 12px; margin-bottom: 1.5rem; }
+  .sub-nav a { color: #b91c1c; text-decoration: none; }
+  .sub-nav a:hover { text-decoration: underline; }
   .cc-related-links { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .cc-related-label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888; margin-bottom: .75rem; }
   .cc-related-link { font-size: 12px; padding: .35rem .75rem; border: 1px solid #e0dbd3; border-radius: 2px; color: #555; text-decoration: none; transition: all .15s; display: inline-block; }
   .cc-related-link:hover { border-color: #1a1a1a; color: #1a1a1a; }
   .cc-disclaimer { font-size: 11px; color: #888; line-height: 1.6; border-top: 1px solid #e0dbd3; padding-top: 1rem; margin-top: 1rem; }
   .cc-footer-links { display: flex; gap: 1rem; font-size: 11px; margin-top: .75rem; }
   .cc-footer-links a { color: #888; text-decoration: underline; }
-
   @media (max-width: 600px) {
     .cc-fields { grid-template-columns: 1fr 1fr; }
     .cc-result-grid, .cc-strategy-grid { grid-template-columns: 1fr; }
@@ -106,217 +98,59 @@ const css = `
   }
 `
 
-const METHODS = [
-  { key: "snowball",  label: "Snowball",  desc: "Smallest balance first" },
-  { key: "avalanche", label: "Avalanche", desc: "Highest interest first" },
-  { key: "emotional", label: "Emotional", desc: "Most hated first" },
+const FAQ = [
+  {
+    q: "What's the difference between snowball and avalanche methods?",
+    a: "Snowball focuses on paying off the smallest balance first, regardless of interest rate. This creates psychological wins faster — each card cleared frees up its minimum payment to attack the next. Avalanche targets the highest interest rate first, which minimizes total interest paid over time. Snowball is better for motivation and habit formation; avalanche is mathematically optimal. The best method is the one you'll stick with."
+  },
+  {
+    q: "How does the emotional strategy work?",
+    a: "The emotional strategy lets you assign a 'stress level' (1–10) to each card based on how much it bothers you — regardless of balance or interest rate. A store card with a high fee, a card from an old relationship, or one that's been in collections might feel worse than a larger balance elsewhere. The calculator pays off your highest-rated cards first. Sometimes eliminating a specific debt is worth more than pure optimization."
+  },
+  {
+    q: "Does the calculator account for changing minimum payments?",
+    a: "The simulation holds your minimum payments fixed as you enter them. In reality, some issuers recalculate minimums as balances drop, which would slightly accelerate payoff. Using fixed minimums is a conservative estimate — your actual payoff time may be slightly shorter than calculated."
+  },
+  {
+    q: "What about balance transfer cards or debt consolidation?",
+    a: "This calculator assumes you keep each card at its original APR. If you transfer a balance to a 0% promotional card, you would enter that new card with the promotional APR (0%) for the intro period. Balance transfers typically charge a 3–5% fee, which should be added to the transferred amount for accuracy. Debt consolidation loans have fixed terms and rates — a different calculation model than credit card payoff."
+  },
+  {
+    q: "How much extra should I pay each month?",
+    a: "Any extra amount helps, but even small amounts compound. An extra $25–50 per month can cut months or years off your payoff timeline and save hundreds in interest. Use the calculator to experiment: try adding $50, then $100, and watch how the payoff time shrinks and interest cost drops. The goal is finding a realistic extra amount you can sustain without burning out."
+  },
+  {
+    q: "Does making extra payments hurt my credit score?",
+    a: "No — paying down credit card balances improves your credit utilization ratio, which is one of the biggest factors in your credit score. Lower utilization typically raises your score within one or two billing cycles. The only potential exception is if you close cards after paying them off (which reduces your total available credit). Keep accounts open but unused to maintain your utilization ratio."
+  }
 ]
 
-function fmt(n) { return "$" + Math.round(n).toLocaleString("en-US") }
-function fmtDec(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
-
-function simulate(cards, extraPayment) {
-  if (!cards.length || cards.every(c => !c.balance)) return null
-
-  let balances = cards.map(c => ({ ...c, remaining: parseFloat(c.balance) || 0, interestPaid: 0 }))
-  const totalMin = balances.reduce((s, c) => s + (parseFloat(c.min) || 0), 0)
-  const extra = parseFloat(extraPayment) || 0
-  let months = 0
-  let totalInterest = 0
-
-  while (balances.some(b => b.remaining > 0) && months < 600) {
-    balances.forEach(b => {
-      if (b.remaining <= 0) return
-      const rate = (parseFloat(b.rate) || 0) / 100 / 12
-      const interest = b.remaining * rate
-      totalInterest += interest
-      b.interestPaid += interest
-      b.remaining += interest
-      const payment = Math.min(parseFloat(b.min) || 0, b.remaining)
-      b.remaining -= payment
-      if (b.remaining < 0.01) b.remaining = 0
-    })
-    if (extra > 0) {
-      const target = balances.find(b => b.remaining > 0)
-      if (target) {
-        target.remaining = Math.max(0, target.remaining - extra)
-      }
-    }
-    months++
-  }
-
-  return { months, totalInterest, cards: balances }
-}
+// Initial cards data
+const initialCards = [
+  { id: 1, name: "Chase Sapphire", balance: "2500", rate: "22.99", min: "50", priority: "" },
+  { id: 2, name: "Discover", balance: "1800", rate: "19.99", min: "40", priority: "" },
+  { id: 3, name: "Capital One", balance: "3500", rate: "24.99", min: "75", priority: "" },
+]
 
 export default function Page() {
-  const [cards, setCards] = useState([
-    { id: 1, name: "", balance: "", rate: "", min: "", priority: "" },
-  ])
-  const [method, setMethod]   = useState("snowball")
-  const [extra, setExtra]     = useState("")
-  const [results, setResults] = useState(null)
-  const [nextId, setNextId]   = useState(2)
-
-  const updateCard = (id, field, value) => {
-    setCards(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c))
-  }
-
-  const addCard = () => {
-    setCards(prev => [...prev, { id: nextId, name: "", balance: "", rate: "", min: "", priority: "" }])
-    setNextId(n => n + 1)
-  }
-
-  const removeCard = (id) => {
-    if (cards.length === 1) return
-    setCards(prev => prev.filter(c => c.id !== id))
-  }
-
-  const sortedCards = useMemo(() => {
-    return [...cards].sort((a, b) => {
-      if (method === "snowball")  return (parseFloat(a.balance) || 0) - (parseFloat(b.balance) || 0)
-      if (method === "avalanche") return (parseFloat(b.rate) || 0) - (parseFloat(a.rate) || 0)
-      if (method === "emotional") return (parseFloat(b.priority) || 0) - (parseFloat(a.priority) || 0)
-      return 0
-    })
-  }, [cards, method])
-
-  const calculate = () => {
-    setResults(simulate(sortedCards, extra))
-  }
-
-  const totalBalance = cards.reduce((s, c) => s + (parseFloat(c.balance) || 0), 0)
-  const maxInterest  = results ? Math.max(...results.cards.map(c => c.interestPaid)) : 0
-
   return (
     <>
-      <style>{css}</style>
+      <style dangerouslySetInnerHTML={{ __html: staticCss }} />
       <main className="cc-wrap">
+
+        <p className="sub-nav"><a href="https://moneywisecalculator.com">← More free tools at MoneyWise Calculator</a></p>
 
         <div className="cc-header">
           <p className="cc-eyebrow">Personal Finance</p>
           <h1 className="cc-title">Credit Card<br /><em>Debt Payoff Planner</em></h1>
         </div>
 
-        {/* TOOL */}
-        <div className="cc-card">
+        <p style={{ fontSize: "13px", color: "#555", lineHeight: "1.7", marginBottom: "1.5rem" }}>
+          Free tool to plan your credit card debt payoff. Compare snowball, avalanche, and emotional strategies. See exactly how long it will take and how much interest you'll pay.
+        </p>
 
-          {cards.map((c, i) => (
-            <div className="cc-debt-card" key={c.id}>
-              <div className="cc-debt-card-header">
-                <span className="cc-card-num">{String(i + 1).padStart(2, "0")}</span>
-                <input
-                  className="cc-name-input"
-                  placeholder="Card name (e.g. Chase Sapphire)"
-                  value={c.name}
-                  onChange={e => updateCard(c.id, "name", e.target.value)}
-                />
-                {cards.length > 1 && (
-                  <button className="cc-remove-btn" onClick={() => removeCard(c.id)} title="Remove">✕</button>
-                )}
-              </div>
-              <div className="cc-fields">
-                <div className="cc-field-wrap">
-                  <label className="cc-field-label">Balance</label>
-                  <span className="cc-field-prefix">$</span>
-                  <input className="cc-num-input" type="number" min="0" placeholder="0"
-                    value={c.balance} onChange={e => updateCard(c.id, "balance", e.target.value)} />
-                </div>
-                <div className="cc-field-wrap">
-                  <label className="cc-field-label">APR</label>
-                  <input className="cc-num-input no-prefix" type="number" min="0" step="0.01" placeholder="0.00"
-                    value={c.rate} onChange={e => updateCard(c.id, "rate", e.target.value)} />
-                  <span className="cc-field-suffix">%</span>
-                </div>
-                <div className="cc-field-wrap">
-                  <label className="cc-field-label">Min payment</label>
-                  <span className="cc-field-prefix">$</span>
-                  <input className="cc-num-input" type="number" min="0" placeholder="0"
-                    value={c.min} onChange={e => updateCard(c.id, "min", e.target.value)} />
-                </div>
-              </div>
-              {method === "emotional" && (
-                <div style={{ marginTop: ".6rem" }}>
-                  <div className="cc-field-wrap" style={{ maxWidth: "160px" }}>
-                    <label className="cc-field-label">Stress level (1–10)</label>
-                    <input className="cc-num-input no-prefix" type="number" min="1" max="10" placeholder="5"
-                      value={c.priority} onChange={e => updateCard(c.id, "priority", e.target.value)} />
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-
-          <button className="cc-add-btn" onClick={addCard}>+ Add another card</button>
-
-          <div className="cc-method-row">
-            <span className="cc-method-label">Payoff strategy</span>
-            <div className="cc-method-tabs">
-              {METHODS.map(m => (
-                <button key={m.key} className={"cc-method-tab" + (method === m.key ? " on" : "")}
-                  onClick={() => setMethod(m.key)}>
-                  {m.label} <span style={{ opacity: .6, fontSize: "10px", marginLeft: ".3rem" }}>{m.desc}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="cc-extra-row">
-            <span className="cc-extra-label">Extra monthly payment</span>
-            <span className="cc-extra-prefix">$</span>
-            <input className="cc-extra-input" type="number" min="0" placeholder="0"
-              value={extra} onChange={e => setExtra(e.target.value)} />
-          </div>
-
-          <button className="cc-calc-btn" onClick={calculate}>Calculate payoff plan →</button>
-
-          {results && (
-            <div className="cc-results">
-              <div className="cc-result-grid">
-                <div className="cc-result-cell">
-                  <p className="cc-result-label">Total balance</p>
-                  <p className="cc-result-val">{fmt(totalBalance)}</p>
-                </div>
-                <div className="cc-result-cell">
-                  <p className="cc-result-label">Payoff time</p>
-                  <p className="cc-result-val">
-                    {results.months >= 600 ? "50+ yrs" : results.months < 12
-                      ? results.months + " mo"
-                      : Math.floor(results.months / 12) + "y " + (results.months % 12) + "m"}
-                  </p>
-                </div>
-                <div className="cc-result-cell">
-                  <p className="cc-result-label">Total interest</p>
-                  <p className="cc-result-val red">{fmtDec(results.totalInterest)}</p>
-                </div>
-              </div>
-
-              <div className="cc-payoff-order">
-                <p className="cc-payoff-label">Payoff order — {METHODS.find(m => m.key === method)?.label} method</p>
-                <div className="cc-payoff-list">
-                  {sortedCards.filter(c => parseFloat(c.balance) > 0).map((c, i) => {
-                    const res = results.cards.find(r => r.id === c.id)
-                    const barPct = maxInterest > 0 ? Math.round((res?.interestPaid || 0) / maxInterest * 100) : 0
-                    return (
-                      <div className="cc-payoff-row" key={c.id}>
-                        <span className="cc-payoff-pos">{i + 1}</span>
-                        <span className="cc-payoff-name">{c.name || "Card " + (i + 1)}</span>
-                        <span className="cc-payoff-detail">{fmt(parseFloat(c.balance) || 0)} · {c.rate || 0}% APR</span>
-                        <div className="cc-payoff-bar-wrap">
-                          <div className="cc-payoff-bar" style={{ width: barPct + "%" }} />
-                        </div>
-                        <span className="cc-payoff-detail">{fmtDec(res?.interestPaid || 0)} interest</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="cc-interest-note">
-                At minimum payments only, you would pay <span>{fmtDec(results.totalInterest)}</span> in interest over <span>{results.months} months</span>. Adding even <span>$50/month</span> extra can significantly reduce both the timeline and total cost.
-              </div>
-            </div>
-          )}
-        </div>
+        {/* INTERACTIVE TOOL — client component */}
+        <DebtPayoffCalculator cards={initialCards} nextId={4} />
 
         {/* STRATEGIES */}
         <div className="cc-card">
@@ -368,6 +202,16 @@ export default function Page() {
           </div>
         </div>
 
+        {/* WHY IT MATTERS */}
+        <div className="cc-card">
+          <p className="cc-section-title">The real cost of carrying a balance</p>
+          <div className="cc-prose">
+            <p>The average credit card APR in the US sits above 20%, which means a $5,000 balance paying only minimums can take over a decade to clear and cost more in interest than the original debt. Most people significantly underestimate this because the monthly interest charge is easy to overlook when it's folded into a single statement number.</p>
+            <p>Carrying a balance also affects your credit utilization ratio — one of the biggest factors in your credit score. High utilization (above 30% of your available credit) suppresses your score, which can raise the cost of other borrowing like auto loans or mortgages. Paying down cards improves utilization and often produces a measurable score improvement within one or two billing cycles.</p>
+            <p>If you're carrying balances on multiple cards, the combined interest cost is usually far higher than it appears. This calculator makes that total visible — which is often the most motivating thing of all.</p>
+          </div>
+        </div>
+
         {/* TIPS */}
         <div className="cc-card">
           <p className="cc-section-title">Tips for getting out of credit card debt faster</p>
@@ -395,40 +239,34 @@ export default function Page() {
           </div>
         </div>
 
-        {/* CONTEXT */}
+        {/* FAQ */}
         <div className="cc-card">
-          <p className="cc-section-title">Understanding the real cost of carrying a balance</p>
-          <div className="cc-prose">
-            <p>The average credit card APR in the US sits above 20%, which means a $5,000 balance paying only minimums can take over a decade to clear and cost more in interest than the original debt. Most people significantly underestimate this because the monthly interest charge is easy to overlook when it&apos;s folded into a single statement number.</p>
-            <p>Carrying a balance also affects your credit utilization ratio — one of the biggest factors in your credit score. High utilization (above 30% of your available credit) suppresses your score, which can raise the cost of other borrowing like auto loans or mortgages. Paying down cards improves utilization and often produces a measurable score improvement within one or two billing cycles.</p>
-            <p>If you&apos;re carrying balances on multiple cards, the combined interest cost is usually far higher than it appears. This calculator makes that total visible — which is often the most motivating thing of all.</p>
-          </div>
+          <p className="cc-section-title">Frequently asked questions</p>
+          {FAQ.map((item, i) => (
+            <div className="cc-faq-item" key={i}>
+              <p className="cc-faq-q">{item.q}</p>
+              <p className="cc-faq-a">{item.a}</p>
+            </div>
+          ))}
         </div>
 
-        {/* ========== MONEYWISE LINK — START ========== */}
-        <div style={{ background: "#fff", border: "1px solid #e0dbd3", borderRadius: "4px", padding: "1rem 1.5rem", marginBottom: "1.5rem", textAlign: "center" }}>
-          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "13px", color: "#888" }}>
-            Looking for more free financial tools?{" "}
-            <a href="https://moneywisecalculator.com" style={{ color: "#b45309", textDecoration: "underline" }}>
-              Visit MoneyWiseCalculator.com
-            </a>
-          </p>
-        </div>
-        {/* ========== MONEYWISE LINK — END ========== */}
-
-        {/* RELATED */}
+        {/* RELATED TOOLS */}
         <div className="cc-card">
           <p className="cc-section-title">Related tools</p>
+          <p className="cc-related-label">More free tools from the MoneyWise Calculator network</p>
           <div className="cc-related-links">
             {RELATED.map((r, i) => (
               <a key={i} className="cc-related-link" href={r.href}>{r.label}</a>
             ))}
           </div>
           <div className="cc-disclaimer">
-            This tool provides estimates for informational purposes only and does not constitute financial advice. Results assume a fixed interest rate and fixed monthly payment for the full repayment period. This site may use cookies and analytics. By using this site, you agree to our Privacy Policy and Terms of Service.
+            This tool provides estimates for informational purposes only and does not constitute financial advice. Results assume a fixed interest rate and fixed monthly payment for the full repayment period. This site uses cookies and analytics. By using this site, you agree to our{" "}
+            <a href="/privacy" style={{ color: "#888" }}>Privacy Policy</a> and{" "}
+            <a href="/terms" style={{ color: "#888" }}>Terms of Service</a>.
             <div className="cc-footer-links">
               <a href="/privacy">Privacy Policy</a>
               <a href="/terms">Terms of Service</a>
+              <a href="https://moneywisecalculator.com">MoneyWise Calculator</a>
             </div>
           </div>
         </div>
